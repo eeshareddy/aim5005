@@ -31,7 +31,7 @@ class MinMaxScaler:
         diff_max_min = self.maximum - self.minimum
         
         # TODO: There is a bug here... Look carefully! 
-        return x-self.minimum/(self.maximum-self.minimum)
+        return (x-self.minimum)/(self.maximum-self.minimum)
     
     def fit_transform(self, x:list) -> np.ndarray:
         x = self._check_is_array(x)
@@ -41,5 +41,35 @@ class MinMaxScaler:
     
 class StandardScaler:
     def __init__(self):
-        self.mean = None
-        raise NotImplementedError
+        self.mean_ = None
+        self.scale_ = None
+
+    def fit(self, X):
+        self.mean_ = np.mean(X, axis=0)
+        self.scale_ = np.std(X, axis=0)
+        return self
+
+    def transform(self, X):
+        if self.mean_ is None or self.scale_ is None:
+            raise ValueError("StandardScaler had not been fitted yet.")
+        return (X - self.mean_) / self.scale_
+
+    def fit_transform(self, X):
+        return self.fit(X).transform(X)
+    
+    
+class LabelEncoder:
+    def __init__(self):
+        self.classes_ = None
+    
+    def fit(self, y):
+        self.classes_ = np.unique(y)
+        return self
+    
+    def transform(self, y):
+        if self.classes_ is None:
+            raise ValueError("LableEncoder has not been fitted yet.")
+        return np.array([np.where(self.classes_ == label)[0][0] for label in y])
+    
+    def fit_transform(self, y):
+        return self.fit(y).transform(y)

@@ -1,4 +1,4 @@
-from aim5005.features import MinMaxScaler, StandardScaler
+from aim5005.features import MinMaxScaler, StandardScaler, LabelEncoder
 import numpy as np
 import unittest
 from unittest.case import TestCase
@@ -62,6 +62,47 @@ class TestFeatures(TestCase):
         assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
 
     # TODO: Add a test of your own below this line
+    def custom_test_standard_scaler(self):
+        data = [[-1, -1], [-1, -1], [0, 0], [0, 0]]
+        expected = np.array([[3., 3.]])
+        scaler = StandardScaler()
+        scaler.fit(data)
+        result = scaler.transform([[1., 1.]])
+        assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
     
+    
+    def test_initialize_label_encoder(self):
+        encoder = LabelEncoder()
+        assert isinstance(encoder, LabelEncoder), "encoder is not a LabelEncoder object"
+    
+    def test_label_encoder_fit(self):
+        encoder = LabelEncoder()
+        data = ["cat", "dog", "cat", "bird"]
+        encoder.fit(data)
+        expected_classes = np.array(["bird", "cat", "dog"])
+        assert (encoder.classes_ == expected_classes).all(), "fit does not return expected classes"
+
+    def test_label_encoder_transform(self):
+        encoder = LabelEncoder()
+        data = ["cat", "dog", "cat", "bird"]
+        encoder.fit(data)
+        transformed = encoder.transform(["dog", "bird", "cat"])
+        expected = np.array([2, 0, 1])
+        assert (transformed == expected).all(), "transform does not return expected encoded values"
+
+    def test_label_encoder_fit_transform(self):
+        encoder = LabelEncoder()
+        data = ["cat", "dog", "cat", "bird"]
+        transformed = encoder.fit_transform(data)
+        expected = np.array([1, 2, 1, 0])
+        assert (transformed == expected).all(), "fit_transform does not return expected encoded values"
+
+    def test_label_encoder_numeric_labels(self):
+        encoder = LabelEncoder()
+        data = [10, 20, 10, 30]
+        transformed = encoder.fit_transform(data)
+        expected = np.array([1, 2, 1, 0])
+        assert (transformed == expected).all(), "fit_transform does not handle numeric labels correctly"    
+
 if __name__ == '__main__':
     unittest.main()
