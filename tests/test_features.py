@@ -44,13 +44,14 @@ class TestFeatures(TestCase):
         data = [[0, 0], [0, 0], [1, 1], [1, 1]]
         expected = np.array([0.5, 0.5])
         scaler.fit(data)
-        assert (scaler.mean == expected).all(), "scaler fit does not return expected mean {}. Got {}".format(expected, scaler.mean)
+        assert (scaler.mean_ == expected).all(), "scaler fit does not return expected mean {}. Got {}".format(expected, scaler.mean)
         
     def test_standard_scaler_transform(self):
         scaler = StandardScaler()
         data = [[0, 0], [0, 0], [1, 1], [1, 1]]
         expected = np.array([[-1., -1.], [-1., -1.], [1., 1.], [1., 1.]])
         scaler.fit(data)
+        result = scaler.transform(data)
         assert (result == expected).all(), "Scaler transform does not return expected values. Expect {}. Got: {}".format(expected.reshape(1,-1), result.reshape(1,-1))
         
     def test_standard_scaler_single_value(self):
@@ -101,7 +102,7 @@ class TestFeatures(TestCase):
         encoder = LabelEncoder()
         data = [10, 20, 10, 30]
         transformed = encoder.fit_transform(data)
-        expected = np.array([1, 2, 1, 0])
+        expected = np.array([0, 1, 0, 2])
         assert (transformed == expected).all(), "fit_transform does not handle numeric labels correctly"    
 
 if __name__ == '__main__':
